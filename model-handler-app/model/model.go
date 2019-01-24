@@ -1,8 +1,9 @@
 package model
 
 import (
-	"errors"
 	"log"
+
+	"github.com/tarunganwani/rest/model-handler-app/errorutil"
 )
 
 //Todo ... basic todo structure
@@ -31,9 +32,9 @@ func InitDB() error {
 //GetTodos ... fetch todo list
 func GetTodos() (Todos, error) {
 
-	// if todolist == nil {
-	// 	return nil, errors.New("Empty TODO list")
-	// }
+	if todolist == nil {
+		return Todos{}, nil
+	}
 	return todolist, nil
 }
 
@@ -49,7 +50,7 @@ func GetTodo(todoid uint32) (todo Todo, err error) {
 		}
 	}
 	if found == false {
-		err = errors.New("item not found")
+		err = errorutil.NewNotFoundError("item not found")
 	}
 	return
 }
@@ -78,7 +79,7 @@ func UpdateTodo(todoidArg uint32, todoitemArg Todo) (Todo, error) {
 			return todolist[i], nil
 		}
 	}
-	return Todo{}, errors.New("Item Not Found")
+	return Todo{}, errorutil.NewNotFoundError("item not found")
 }
 
 //DeleteTodo ... delete todo item
@@ -89,5 +90,5 @@ func DeleteTodo(todoidArg uint32) error {
 			return nil
 		}
 	}
-	return errors.New("Item not found")
+	return errorutil.NewNotFoundError("item not found")
 }

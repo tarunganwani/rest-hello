@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/tarunganwani/rest/model-handler-app/errorutil"
 	"github.com/tarunganwani/rest/model-handler-app/model"
 )
 
@@ -72,7 +73,12 @@ func listTodoHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	todoitem, err := model.GetTodo(uint32(todoid))
 	if err != nil {
-		sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+		switch err.(type) {
+		case *errorutil.NotFoundError:
+			sendErrorResponse(w, http.StatusNotFound, err.Error())
+		default:
+			sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 	sendJSONResponse(w, http.StatusOK, todoitem)
@@ -108,7 +114,12 @@ func updateTodoHandler(w http.ResponseWriter, req *http.Request) {
 
 	todoitem, err = model.UpdateTodo(uint32(todoid), todoitem)
 	if err != nil {
-		sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+		switch err.(type) {
+		case *errorutil.NotFoundError:
+			sendErrorResponse(w, http.StatusNotFound, err.Error())
+		default:
+			sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 	sendJSONResponse(w, http.StatusOK, todoitem)
@@ -125,9 +136,13 @@ func deleteTodoHandler(w http.ResponseWriter, req *http.Request) {
 
 	err = model.DeleteTodo(uint32(todoid))
 	if err != nil {
-		sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+		switch err.(type) {
+		case *errorutil.NotFoundError:
+			sendErrorResponse(w, http.StatusNotFound, err.Error())
+		default:
+			sendErrorResponse(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
-
-	sendJSONResponse(w, http.StatusOK, nil)
+	sendJSONResponse(w, http.StatusOK, map[string]string{"result": "success"})
 }
