@@ -11,6 +11,7 @@ import (
 )
 
 func clearTodos() error {
+
 	client := http.Client{}
 	//Clear all todos (already tested)
 	delReq, err := http.NewRequest("DELETE", "http://localhost:8080/todos", nil)
