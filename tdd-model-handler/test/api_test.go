@@ -1,17 +1,17 @@
 package test
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"bytes"
 	"testing"
-	"errors"
 )
 
-func clearTodos() error{
-	
+func clearTodos() error {
+
 	client := http.Client{}
 	//Clear all todos (already tested)
 	delReq, err := http.NewRequest("DELETE", "http://localhost:8080/todos", nil)
@@ -22,10 +22,10 @@ func clearTodos() error{
 	return nil
 }
 
-func getTodoList() (*string, error){
+func getTodoList() (*string, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", "http://localhost:8080/todos", nil)
-	if err != nil {
+	if err != nil { //
 		return nil, err
 	}
 	//rr := executeRequest(req)
@@ -44,9 +44,9 @@ func getTodoList() (*string, error){
 	*respBodyStr = string(respBody)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("Expected status " + strconv.Itoa(http.StatusOK) + 
-								" received status " + strconv.Itoa(resp.StatusCode) +
-								" response " + *respBodyStr)
+		return nil, errors.New("Expected status " + strconv.Itoa(http.StatusOK) +
+			" received status " + strconv.Itoa(resp.StatusCode) +
+			" response " + *respBodyStr)
 	}
 
 	return respBodyStr, nil
@@ -55,7 +55,7 @@ func getTodoList() (*string, error){
 func TestEmptyModel(t *testing.T) {
 
 	respBodyStr, err := getTodoList()
-	if err != nil{
+	if err != nil {
 		t.Fatalf("Error " + err.Error())
 	}
 	if *respBodyStr != "[]" {
@@ -67,30 +67,30 @@ func TestDeleteAllTodos(t *testing.T) {
 
 	client := http.Client{}
 	req, err := http.NewRequest("DELETE", "http://localhost:8080/todos", nil)
-	if err != nil{
+	if err != nil {
 		t.Fatal("unexpected error " + err.Error())
 	}
 	response, err := client.Do(req)
-	if err != nil{
+	if err != nil {
 		t.Fatal("unexpected error " + err.Error())
 	}
 
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
-	if err != nil{
+	if err != nil {
 		t.Fatal("unexpected error " + err.Error())
 	}
 
 	var responsemap map[string]string
 	err = json.Unmarshal(body, &responsemap)
-	if responsemap["result"] != "success"{
-		t.Fatal("expected result = \"success\" received = " +responsemap["result"])
+	if responsemap["result"] != "success" {
+		t.Fatal("expected result = \"success\" received = " + responsemap["result"])
 	}
 
 	//test for empty list
 	respBodyStr, err := getTodoList()
-	if err != nil{
+	if err != nil {
 		t.Fatalf("Error " + err.Error())
 	}
 	if *respBodyStr != "[]" {
@@ -206,7 +206,6 @@ func TestCreateTodo(t *testing.T) {
 		t.Fatal("Clear all todos error " + err.Error())
 	}
 
-
 	//Create todo
 	// todopayload := "{ \"message\" : \"message1\" }"
 	todopayload := []byte(`{"message":"message1"}`)
@@ -237,14 +236,12 @@ func TestCreateTodoBadRequest(t *testing.T) {
 		t.Fatal("Clear all todos error " + err.Error())
 	}
 
-
 	badpayload := []byte(`{"message":1}`) //pass int(as message value) instead of string
 	responseMap := createTodo(t, badpayload, http.StatusBadRequest)
 	if responseMap["error"] != "bad request" {
 		t.Fatal("expected error = \"bad request\" received = ", responseMap["error"])
 	}
 
-	
 	badpayload = []byte(`{"message":"msg1"`) //Note the missing end paranthesis
 	responseMap = createTodo(t, badpayload, http.StatusBadRequest)
 	if responseMap["error"] != "bad request" {
@@ -260,7 +257,6 @@ func TestExistentProduct(t *testing.T) {
 	if err != nil {
 		t.Fatal("Clear all todos error " + err.Error())
 	}
-
 
 	//presuming this is already tested in createtodo test, we dont check for proper response post create
 	todopayload := []byte(`{"message":"message1"}`)
@@ -304,8 +300,6 @@ func TestExistentProduct(t *testing.T) {
 
 }
 
-
-
 func TestDeleteProduct(t *testing.T) {
 
 	//Clear all todos (already tested)
@@ -313,7 +307,6 @@ func TestDeleteProduct(t *testing.T) {
 	if err != nil {
 		t.Fatal("Clear all todos error " + err.Error())
 	}
-
 
 	//presuming this is already tested in createtodo test, we dont check for proper response post create
 	todopayload := []byte(`{"message":"message1"}`)
@@ -346,7 +339,6 @@ func TestDeleteProduct(t *testing.T) {
 		t.Fatal("Expceted result = \"success\" Received = \"", responseMap["result"], "\"")
 	}
 
-
 	//test todo for non-existence
 	req, err = http.NewRequest("GET", "http://localhost:8080/todo/1", nil)
 	if err != nil {
@@ -364,8 +356,6 @@ func TestDeleteProduct(t *testing.T) {
 	}
 
 }
-
-
 
 func TestUpdateProduct(t *testing.T) {
 
@@ -411,7 +401,7 @@ func TestUpdateProduct(t *testing.T) {
 
 	// DOUBLE CHECK
 	//test todo for update
-	
+
 	req, err = http.NewRequest("GET", "http://localhost:8080/todo/1", nil)
 	if err != nil {
 		t.Fatal("Unexpected error " + err.Error())
