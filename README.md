@@ -12,3 +12,8 @@ Can think of it as step-by-step demonstration in builing production grade REST A
 Additional Notes:
 1. model can be thought of as a mocked version of database. It uses slice to simulate a database for the CRUD operations.
 2. The tests cover a lot of cases but are not complete. few negative cases are not covered; the intent being this is a demonstration - not attempting to write a full blown production code 
+
+
+
+[ADD]
+Demo for a basic jenkins pipeline (Jenkinsfile)
