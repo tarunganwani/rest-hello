@@ -1,17 +1,17 @@
 pipeline{
 	agent any
 	
+	environment {
+        GOPATH = "${pwd}"
+        PATH = "C:\\Users\\tarun.ganwani\\AppData\\Local\\Programs\\Git\\usr\\bin;C:\\Users\\tarun.ganwani\\AppData\\Local\\Programs\\Git\\bin;${env.PATH}"
+    }
+    
 	stages{
 		stage('Build'){
-			sh 'set GOPATH=C:\Users\tarun.ganwani\go'
-			sh 'cd basic-todo'
-			sh 'go build' 
-
-			sh 'cd model-handler-app'
-			sh 'go build'
-			
-			sh 'cd tdd-model-handler'
-			sh 'go build'
+		    steps{
+    		    bat "cd basic-todo"
+    			bat "go build"
+		    }
 		}
 	}
 }
